@@ -1,3 +1,4 @@
+from black import re
 from flask import Flask, render_template
 from post import Post
 import requests
@@ -33,6 +34,16 @@ def about():
 @app.route("/contact.html")
 def contact():
     return render_template("contact.html")
+
+
+@app.route("/post/<int:post_id>")
+def show_post(post_id):
+    requested_post = None
+    for post in posts:
+        if post.id == post_id:
+            requested_post = post
+            break
+    return render_template("post.html", post=requested_post)
 
 
 if __name__ == "__main__":
