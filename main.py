@@ -1,5 +1,6 @@
+from email.mime import message
 from black import re
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from post import Post
 import requests
 
@@ -26,14 +27,18 @@ def home():
     return render_template("index.html", posts=posts)
 
 
-@app.route("/about.html")
+@app.route("/about")
 def about():
     return render_template("about.html")
 
 
-@app.route("/contact.html")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
-    return render_template("contact.html")
+    if request.method == "GET":
+        return render_template("contact.html")
+    elif request.method == "POST":
+        name = request.form["name"]
+        return f"<h1>Successfully sent message, well done {name}</h1>"
 
 
 @app.route("/post/<int:post_id>")
