@@ -1,9 +1,12 @@
-from email.mime import message
-from black import re
+from credentials import secret
 from flask import Flask, render_template, request
 from post import Post
 import requests
+import smtplib
 
+MAIL = secret["email"]
+PASSWORD = secret["password"]
+CURR_MAIL = secret["current_mail"]
 app = Flask(__name__)
 
 
@@ -38,6 +41,10 @@ def contact():
         return render_template("contact.html")
     elif request.method == "POST":
         name = request.form["name"]
+        email = request.form["email"]
+        phone = request.form["phone"]
+        message = request.form["message"]
+        send_email(name, email, phone, message)
         return f"<h1>Successfully sent message, well done {name}</h1>"
 
 
@@ -49,6 +56,14 @@ def show_post(post_id):
             requested_post = post
             break
     return render_template("post.html", post=requested_post)
+
+
+def send_email(name, email, phone, message):
+    email_message = f"Subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\nMessage:{message}"
+    with smtplib.SMTP("smtp.gmail.com") as connection:
+        connection.starttls()
+        connection.login(MAIL, PASSWORD)
+        connection.sendmail(MAIL, CURR_MAIL, email_message)
 
 
 if __name__ == "__main__":
